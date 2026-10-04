@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>DoubtDesk</title>
+<style>
+:root{--bg:#f1f3f8;--surface:#fff;--primary:#2338c9;--secondary:#e8ebfa;--text:#141a2e;--muted:#59627a;--border:#dbe0ec;--success:#11785a;--warning:#9a5b00;--danger:#bf2638;--radius:14px;--shadow:0 1px 2px rgba(20,26,46,.06);--serif:"Iowan Old Style",Charter,Georgia,serif;--sans:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:15px/1.55 var(--sans)}
+a{color:inherit;text-decoration:none}:focus-visible{outline:3px solid var(--primary);outline-offset:2px}
+h1,h2,h3,.qt,.logo{font-family:var(--serif);letter-spacing:-.01em}h1{font-size:1.7rem;margin:0 0 .6rem}h2{font-size:1.2rem;margin:0 0 .5rem}
+.shell{display:grid;grid-template-columns:220px minmax(0,1fr) 280px;gap:24px;max-width:1240px;margin:0 auto;padding:20px}
+nav.side{position:sticky;top:20px;align-self:start;display:flex;flex-direction:column;gap:4px}
+.logo{font-size:1.5rem;font-weight:700;color:var(--primary);padding:6px 12px 14px;display:block}
+.nl{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:10px;color:var(--muted);font-weight:500;border:0;background:none;font:inherit;cursor:pointer;text-align:left}
+.nl:hover{background:var(--secondary)}.nl.on{background:var(--primary);color:#fff}
+.badge{background:var(--danger);color:#fff;border-radius:99px;font-size:.72rem;padding:0 6px;margin-left:auto}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px;box-shadow:var(--shadow);margin-bottom:14px}
+.q .qt{font-size:1.15rem;font-weight:600;display:block;margin-bottom:4px}.q .qt:hover{color:var(--primary)}.q p{margin:0 0 10px;color:var(--muted)}
+.meta{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;font-size:.85rem;margin-top:6px}.muted{color:var(--muted)}
+.chip{background:var(--secondary);color:var(--primary);border-radius:8px;padding:1px 9px;font-size:.8rem;font-weight:500}.tag{border:1px solid var(--border);border-radius:8px;padding:1px 8px;font-size:.8rem;color:var(--muted)}
+.st{font-weight:600;font-size:.8rem;border-radius:8px;padding:1px 9px}.st.solved{background:#dcf3ea;color:var(--success)}.st.open{background:#fdf0d8;color:var(--warning)}
+.btn{border:1px solid var(--border);background:var(--surface);color:var(--text);border-radius:10px;padding:8px 14px;font:inherit;font-weight:600;cursor:pointer}.btn:hover{background:var(--secondary)}
+.btn.p{background:var(--primary);border-color:var(--primary);color:#fff}.btn.p:hover{filter:brightness(1.1)}.btn.d{color:var(--danger)}.btn.sm{padding:3px 10px;font-size:.82rem}
+.ico{border:0;background:none;cursor:pointer;font:inherit;color:var(--muted);padding:2px 6px;border-radius:6px}.ico:hover{background:var(--secondary)}.ico.on{color:var(--primary);font-weight:700}
+.tabs{display:flex;gap:6px;margin:0 0 14px;flex-wrap:wrap}.tabs button{border:1px solid var(--border);background:var(--surface);border-radius:99px;padding:5px 14px;cursor:pointer;font:inherit}.tabs .on{background:var(--text);color:#fff;border-color:var(--text)}
+label{display:block;font-weight:600;margin:12px 0 4px}input,select,textarea{width:100%;border:1px solid var(--border);border-radius:10px;padding:9px 12px;font:inherit;background:#fff;color:var(--text)}textarea{min-height:120px;resize:vertical}
+.err{color:var(--danger);font-size:.85rem;margin-top:4px}.grid{display:grid;gap:10px}.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:10px;margin-bottom:14px}
+.stat{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:10px 14px}.stat b{display:block;font:700 1.4rem var(--serif)}.stat span{color:var(--muted);font-size:.82rem}
+.ans{display:grid;grid-template-columns:44px 1fr;gap:12px}.vote{display:flex;flex-direction:column;align-items:center}.vote b{font-size:1.1rem}
+.ans.acc{border:2px solid var(--success);background:#f3fbf7}.accb{color:var(--success);font-weight:700;font-size:.85rem}
+.av{display:inline-grid;place-items:center;width:28px;height:28px;border-radius:50%;background:var(--primary);color:#fff;font-size:.8rem;font-weight:700;vertical-align:middle;margin-right:6px}.av.l{width:72px;height:72px;font-size:1.8rem}
+.empty{text-align:center;padding:36px 12px;color:var(--muted)}.notif.unread{border-left:4px solid var(--primary)}
+aside.rt .card{padding:14px}aside.rt a{display:block;padding:3px 0;color:var(--primary)}
+dialog{border:1px solid var(--border);border-radius:var(--radius);padding:20px;max-width:420px;width:92%}dialog::backdrop{background:rgba(20,26,46,.45)}
+#toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:var(--text);color:#fff;padding:9px 18px;border-radius:10px;opacity:0;transition:opacity .2s;pointer-events:none;z-index:9}#toast.show{opacity:1}
+.auth{max-width:440px;margin:6vh auto;padding:0 16px}.demo{background:var(--secondary);border-radius:10px;padding:10px 12px;font-size:.88rem;margin:12px 0}
+nav.bot{display:none}
+@media(max-width:1080px){.shell{grid-template-columns:200px minmax(0,1fr)}aside.rt{display:none}}
+@media(max-width:760px){.shell{grid-template-columns:1fr;padding:12px 12px 84px}nav.side{display:none}
+nav.bot{display:flex;position:fixed;bottom:0;left:0;right:0;background:var(--surface);border-top:1px solid var(--border);justify-content:space-around;padding:4px;z-index:5}
+nav.bot a{flex:1;text-align:center;padding:8px 2px;font-size:.72rem;color:var(--muted);border-radius:8px;position:relative;min-height:44px}nav.bot a.on{color:var(--primary);font-weight:700}
+.ans{grid-template-columns:34px 1fr}h1{font-size:1.4rem}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style></head><body>
+<div id="app"></div><dialog id="dlg"></dialog><div id="toast" role="status" aria-live="polite"></div>
+<script>
+'use strict';
+(() => {
+/* ===== UTILITIES ===== */
+const K = 'dd_db', SK = 'dd_session', SUBJECTS = ['Mathematics','Physics','Programming','Civil Engineering','Electrical Engineering','Chemistry'];
+const $ = (s, r = document) => r.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const uid = () => Math.random().toString(36).slice(2, 9);
+const H = 3600e3;
+const ago = t => { const m = (Date.now() - t) / 6e4; return m < 1 ? 'just now' : m < 60 ? Math.floor(m) + 'm ago' : m < 1440 ? Math.floor(m / 60) + 'h ago' : Math.floor(m / 1440) + 'd ago'; };
+const toast = m => { const t = $('#toast'); t.textContent = m; t.classList.add('show'); clearTimeout(toast.t); toast.t = setTimeout(() => t.classList.remove('show'), 2200); };
+const debounce = (f, ms = 200) => { let t; return (...a) => { clearTimeout(t); t = setTimeout(() => f(...a), ms); }; };
+
+/* ===== APP STATE ===== */
+const AppState = { currentUser: null, ui: { tab: 'latest', ptab: 'q', edit: false, editAns: null, sim: false, s: { q: '', subject: '', status: '', sort: 'new' } } };
+
+/* ===== DATA STORE (swap this section for an API later; prototype-only, passwords are plain text) ===== */
+let db;
+const loadDb = () => { try { const d = JSON.parse(localStorage.getItem(K)); if (d && d.users && d.doubts && d.answers) return d; } catch (e) {} return null; };
+const save = () => localStorage.setItem(K, JSON.stringify(db));
+const usr = id => db.users.find(u => u.id === id) || { id, name: 'Deleted user', username: 'deleted', branch: '', year: '' };
+const doubt = id => db.doubts.find(d => d.id === id);
+const ans = id => db.answers.find(a => a.id === id);
+const ansOf = qid => db.answers.filter(a => a.questionId === qid);
+const isSolved = d => ansOf(d.id).some(a => a.isAccepted);
+const score = a => a.voters.reduce((s, v) => s + v.v, 0);
+const bms = () => (db.bookmarks[AppState.currentUser?.id] ||= []);
+function seed() {
+  const names = [['Demo Student','demo','demo@doubtdesk.local','Computer Science','2nd'],['Aarav Mehta','aarav','aarav@doubtdesk.local','Civil Engineering','3rd'],['Priya Nair','priya','priya@doubtdesk.local','Electrical Engineering','2nd'],['Rohan Das','rohan','rohan@doubtdesk.local','Physics','4th'],['Sneha Iyer','sneha','sneha@doubtdesk.local','Chemistry','1st']];
+  const users = names.map((n, i) => ({ id: 'u' + (i + 1), name: n[0], username: n[1], email: n[2], password: i ? 'pass123' : 'demo123', branch: n[3], year: n[4], role: i ? 'user' : 'admin', joinedAt: Date.now() - (60 - i * 7) * 24 * H }));
+  const D = [
+    [1,0,'Why does the integral of 1/x give ln|x| and not just ln x?','For x<0, ln x is undefined, but 1/x is still integrable there. How does the absolute value fix this?','calculus,integration',50,120],
+    [2,0,'Finding eigenvectors when eigenvalues repeat','My 3x3 matrix has a repeated eigenvalue of 2. How do I know if I get one or two independent eigenvectors?','linear-algebra,eigenvalues',30,80],
+    [3,0,'Uniform vs pointwise convergence of function sequences','I understand pointwise, but what exactly changes for uniform convergence? Example with x^n on [0,1] please.','analysis,sequences',10,45],
+    [3,1,'Why does a satellite not fall despite gravity acting on it?','If gravity pulls it down, why does it stay in orbit? Is it really weightless?','gravity,orbits',70,210],
+    [4,1,"Applying Gauss's law to a non-uniformly charged sphere",'Charge density is rho = k r. How do I find the field inside at radius r?','electrostatics,gauss-law',22,64],
+    [3,1,"Direction of induced current using Lenz's law",'A loop is pulled out of a magnetic field into the page. Which way does the current flow?','induction,lenz',5,30],
+    [0,2,'Why is my recursive Fibonacci in Python so slow for n=40?','fib(n) calls fib(n-1)+fib(n-2). It hangs around n=40. What is going wrong?','python,recursion,dp',40,300],
+    [1,2,'Stack vs heap memory in C','When is a variable on the stack vs heap? What happens if I return a pointer to a local array?','c,memory,pointers',18,140],
+    [2,2,'Binary search returns wrong index with duplicates','I need the first occurrence of a value but my code returns any match. How to fix it?','algorithms,binary-search',8,52],
+    [4,2,'Time complexity of building a heap from an array','Heapify looks like n log n but my textbook says O(n). How?','heap,complexity',3,20],
+    [0,3,'Bending moment of a simply supported beam with UDL','How to derive the maximum bending moment wL^2/8 step by step?','beams,structures',35,98],
+    [2,3,'Why is concrete cured for 28 days?','What is special about 28 days and what happens if we cure for only 7?','concrete,curing',15,41],
+    [1,3,'Working stress method vs limit state design','Which one do current codes prefer and why?','rcc,design',6,25],
+    [4,4,"Why are transformer cores laminated?",'What is the purpose of thin insulated sheets instead of a solid iron core?','transformer,eddy-current',26,77],
+    [0,4,"Thevenin equivalent with a dependent source",'I cannot turn off the dependent source to find Rth. What is the right method?','circuits,thevenin',12,58],
+    [3,4,'Why does star-delta starting reduce starting current?','Explain the voltage per phase during star connection for an induction motor.','motors,starter',2,14],
+    [2,5,'Why does water boil higher than H2S?','Oxygen and sulfur are in the same group, yet water boils at 100C. Is it only hydrogen bonding?','bonding,boiling-point',44,90],
+    [1,5,'Balancing redox reactions in acidic medium','Steps for balancing MnO4- + Fe2+ -> Mn2+ + Fe3+ using half reactions.','redox,balancing',9,36]];
+  const doubts = D.map((r, i) => ({ id: 'q' + (i + 1), authorId: 'u' + r[0], title: r[2], body: r[3], subject: SUBJECTS[r[1]], tags: r[4].split(','), status: 'open', createdAt: Date.now() - r[5] * H, updatedAt: Date.now() - r[5] * H, views: r[6] }));
+  const A = [[1,2,'Because ln x only exists for x>0. d/dx ln|x| = 1/x for both signs, so ln|x| covers all x except 0.',3,1],[2,4,'Find the null space of (A-2I). If its dimension is 2 you get two independent eigenvectors, otherwise only one.',2,1],[4,3,'Gravity is the centripetal force. The satellite is constantly falling but moves sideways fast enough to miss Earth.',4,1],[4,5,'Weightless only in the sense of free fall; gravity is still about 90% of surface value in low orbit.',1,0],[5,5,'Use a spherical Gaussian surface; enclosed charge = integral of k r 4πr² dr = kπr⁴, so E = kr²/(4ε0).',2,1],[7,4,'Memoize with functools.lru_cache or use a loop. The naive version recomputes the same subproblems exponentially.',5,1],[7,3,'Use an iterative bottom-up loop: O(n) time and O(1) space.',2,0],[8,3,'Stack is automatic and scoped; heap needs malloc/free. Returning a pointer to a local array is undefined behaviour.',3,1],[9,4,'When you find a match, store the index and keep searching left (hi = mid-1).',2,0],[11,2,'Reaction at each support is wL/2. M(x) = wLx/2 - wx²/2, maximum at x=L/2 gives wL²/8.',3,1],[14,5,'Solid iron allows large eddy currents, which waste power as heat. Laminations break up those loops.',4,1],[15,2,'With a dependent source, apply a test source at the terminals and compute Rth = V/I.',2,0],[17,2,'Hydrogen bonding is much stronger in water because oxygen is small and highly electronegative.',3,0],[18,4,'Split into half reactions, balance O with H2O, H with H+, then charge with electrons and equalize.',1,0]];
+  const answers = A.map((r, i) => { const d = doubts[r[0] - 1]; const au = 'u' + r[1]; const vs = users.filter(u => u.id !== au).slice(0, r[3]).map(u => ({ u: u.id, v: 1 })); return { id: 'a' + (i + 1), questionId: d.id, authorId: au, body: r[2], voters: vs, isAccepted: !!r[4] && false, createdAt: d.createdAt + 2 * H }; });
+  [1,2,3,6,8,10,11,14].forEach(n => { const a = answers.find(x => x.id === 'a' + { 1:1,2:2,3:3,6:6,8:8,10:10,11:11,14:14 }[n]); if (a) a.isAccepted = true; });
+  return { users, doubts, answers, notifs: [
+    { id: uid(), userId: 'u1', text: 'Priya Nair answered your doubt "Why is my recursive Fibonacci in Python so slow for n=40?"', link: '#/q/q7', read: false, at: Date.now() - 3 * H },
+    { id: uid(), userId: 'u1', text: 'Rohan Das upvoted your answer', link: '#/q/q11', read: false, at: Date.now() - 20 * H }], reports: [{ id: uid(), type: 'answer', targetId: 'a13', reason: 'misinformation', reporterId: 'u4', status: 'open', at: Date.now() - 5 * H }], bookmarks: { u1: ['q4', 'q9'] }, viewed: {} };
+}
+/* ===== AUTH (simulated; replace with real API) ===== */
+const getUsers = () => db.users;
+const getCurrentUser = () => { const id = localStorage.getItem(SK); return db.users.find(u => u.id === id) || null; };
+const loginUser = (id, pw) => { const u = db.users.find(x => (x.email === id.toLowerCase() || x.username === id.toLowerCase()) && x.password === pw); if (u) { localStorage.setItem(SK, u.id); AppState.currentUser = u; } return u; };
+const logoutUser = () => { localStorage.removeItem(SK); AppState.currentUser = null; };
+/* ===== REPUTATION (single source of truth, derived from votes so it never double-counts) ===== */
+const Rep = { ACC: 15, UP: 10, DOWN: -2, of(id) { let r = 1; db.answers.forEach(a => { if (a.authorId !== id) return; if (a.isAccepted) r += Rep.ACC; a.voters.forEach(v => r += v.v > 0 ? Rep.UP : Rep.DOWN); }); return Math.max(r, 0); } };
+/* ===== NOTIFICATIONS ===== */
+const notify = (userId, text, link) => { if (userId !== AppState.currentUser.id) db.notifs.unshift({ id: uid(), userId, text, link, read: false, at: Date.now() }); };
+const myNotifs = () => db.notifs.filter(n => n.userId === AppState.currentUser?.id);
+/* ===== SIMILARITY (Jaccard on word sets; run on demand, not per keystroke) ===== */
+const toks = s => new Set(s.toLowerCase().match(/[a-z0-9]{3,}/g) || []);
+const similar = (t, b, skip) => { const a = toks(t + ' ' + b); return db.doubts.filter(d => d.id !== skip).map(d => { const c = toks(d.title + ' ' + d.body); let i = 0; a.forEach(x => c.has(x) && i++); return [d, i / (a.size + c.size - i || 1)]; }).filter(x => x[1] > 0.08).sort((x, y) => y[1] - x[1]).slice(0, 3).map(x => x[0]); };
+/* ===== SEARCH / FILTER ===== */
+function query(o) {
+  const q = (o.q || '').toLowerCase().trim();
+  let r = db.doubts.filter(d => (!q || (d.title + ' ' + d.body + ' ' + d.tags.join(' ') + ' ' + d.subject).toLowerCase().includes(q)) && (!o.subject || d.subject === o.subject) && (!o.status || (o.status === 'solved') === isSolved(d)) && (o.status !== 'unanswered' || !ansOf(d.id).length));
+  if (o.status === 'unanswered') r = db.doubts.filter(d => r.includes(d) || (!ansOf(d.id).length && (!o.subject || d.subject === o.subject) && (!q || (d.title + d.body).toLowerCase().includes(q)))).filter(d => !ansOf(d.id).length);
+  const s = { new: (a, b) => b.createdAt - a.createdAt, answered: (a, b) => ansOf(b.id).length - ansOf(a.id).length, popular: (a, b) => b.views - a.views }[o.sort || 'new'];
+  return r.sort(s);
+}
+/* ===== COMPONENTS ===== */
+const avatar = (u, l) => `<span class="av${l ? ' l' : ''}" aria-hidden="true">${esc((u.name || '?')[0])}</span>`;
+const tagH = t => `<a class="tag" href="#/search" data-act="tagq" data-t="${esc(t)}">#${esc(t)}</a>`;
+const statusH = d => isSolved(d) ? '<span class="st solved">Solved</span>' : '<span class="st open">Open</span>';
+const card = d => { const n = ansOf(d.id).length, on = bms().includes(d.id); return `<article class="card q"><a class="qt" href="#/q/${d.id}">${esc(d.title)}</a><p>${esc(d.body.slice(0, 140))}${d.body.length > 140 ? '…' : ''}</p><div class="meta">${statusH(d)}<span class="chip">${esc(d.subject)}</span>${d.tags.map(tagH).join('')}</div><div class="meta muted"><span>${esc(usr(d.authorId).name)}</span><span>${ago(d.createdAt)}</span><span>${n} answer${n === 1 ? '' : 's'}</span><span>${d.views} views</span><button class="ico ${on ? 'on' : ''}" data-act="bm" data-id="${d.id}" aria-pressed="${on}" aria-label="Bookmark">${on ? '★ Saved' : '☆ Save'}</button></div></article>`; };
+const answerH = (a, q) => { const me = AppState.currentUser, au = usr(a.authorId), my = a.voters.find(v => v.u === me.id)?.v || 0;
+  if (AppState.ui.editAns === a.id) return `<div class="card"><form data-form="editans" data-id="${a.id}"><textarea name="body" aria-label="Edit answer">${esc(a.body)}</textarea><div class="meta"><button class="btn p">Save answer</button><button type="button" class="btn" data-act="cancel">Cancel</button></div></form></div>`;
+  return `<div class="card ans ${a.isAccepted ? 'acc' : ''}"><div class="vote"><button class="ico ${my > 0 ? 'on' : ''}" data-act="vote" data-v="1" data-id="${a.id}" aria-label="Upvote">▲</button><b>${score(a)}</b><button class="ico ${my < 0 ? 'on' : ''}" data-act="vote" data-v="-1" data-id="${a.id}" aria-label="Downvote">▼</button></div><div>${a.isAccepted ? '<div class="accb">✓ Accepted answer</div>' : ''}<div style="white-space:pre-wrap">${esc(a.body)}</div><div class="meta muted">${avatar(au)}<span>${esc(au.name)} · ${Rep.of(au.id)} rep</span><span>${ago(a.createdAt)}</span>${q.authorId === me.id ? `<button class="btn sm" data-act="accept" data-id="${a.id}">${a.isAccepted ? 'Unaccept' : 'Accept answer'}</button>` : ''}${a.authorId === me.id ? `<button class="ico" data-act="editans" data-id="${a.id}">Edit</button><button class="ico" data-act="delans" data-id="${a.id}">Delete</button>` : ''}<button class="ico" data-act="report" data-type="answer" data-id="${a.id}">Report</button></div></div></div>`; };
+const notifH = n => `<div class="card notif ${n.read ? '' : 'unread'}"><a href="${n.link}" data-act="read" data-id="${n.id}">${esc(n.text)}</a><div class="meta muted">${ago(n.at)}${n.read ? '' : `<button class="ico" data-act="read1" data-id="${n.id}">Mark as read</button>`}</div></div>`;
+const empty = (t, s) => `<div class="card empty"><h2>${t}</h2><p>${s}</p></div>`;
+const stats = u => { const A = db.answers.filter(a => a.authorId === u.id), Q = db.doubts.filter(d => d.authorId === u.id); return [['Reputation', Rep.of(u.id)], ['Doubts asked', Q.length], ['Answers', A.length], ['Accepted', A.filter(a => a.isAccepted).length], ['Upvotes', A.reduce((s, a) => s + a.voters.filter(v => v.v > 0).length, 0)], ['Solved doubts', Q.filter(isSolved).length]]; };
+const statsH = u => `<div class="stats">${stats(u).map(s => `<div class="stat"><b>${s[1]}</b><span>${s[0]}</span></div>`).join('')}</div>`;
+const list = (arr, e) => arr.length ? arr.map(card).join('') : e;
+/* ===== VIEWS ===== */
+const V = {
+  home() { const me = AppState.currentUser, t = AppState.ui.tab;
+    const f = { latest: () => query({ sort: 'new' }), unanswered: () => query({ status: 'unanswered' }), solved: () => query({ status: 'solved' }), popular: () => query({ sort: 'popular' }) }[t]();
+    return `<h1>Welcome back, ${esc(me.name.split(' ')[0])}</h1>${statsH(me)}<div class="tabs" role="tablist">${['latest', 'unanswered', 'solved', 'popular'].map(x => `<button class="${x === t ? 'on' : ''}" data-act="tab" data-t="${x}" role="tab" aria-selected="${x === t}">${x[0].toUpperCase() + x.slice(1)}</button>`).join('')}</div>${list(f, empty('Nothing here yet', 'Try another tab or ask the first doubt.'))}`; },
+  ask(id) { const d = id && doubt(id); return `<h1>${d ? 'Edit doubt' : 'Ask a doubt'}</h1><form class="card" data-form="ask" data-id="${d ? d.id : ''}" novalidate><label for="t">Title</label><input id="t" name="title" maxlength="120" value="${esc(d?.title)}" placeholder="What are you stuck on?"><label for="b">Describe your doubt</label><textarea id="b" name="body" maxlength="2000">${esc(d?.body)}</textarea><label for="s">Subject</label><select id="s" name="subject"><option value="">Choose subject</option>${SUBJECTS.map(s => `<option ${d?.subject === s ? 'selected' : ''}>${s}</option>`).join('')}</select><label for="g">Tags (comma separated)</label><input id="g" name="tags" value="${esc(d?.tags.join(', '))}" placeholder="calculus, limits"><div id="err" class="err" role="alert"></div><div id="sim"></div><div class="meta"><button class="btn p" id="post">${d ? 'Save changes' : 'Post doubt'}</button></div></form>`; },
+  q(id) { const d = doubt(id); if (!d) return empty('Doubt not found', 'It may have been removed.'); const me = AppState.currentUser, as = ansOf(id).sort((a, b) => b.isAccepted - a.isAccepted || score(b) - score(a)), au = usr(d.authorId), on = bms().includes(d.id);
+    return `<article class="card"><div class="meta">${statusH(d)}<span class="chip">${esc(d.subject)}</span>${d.tags.map(tagH).join('')}</div><h1 style="margin-top:10px">${esc(d.title)}</h1><div style="white-space:pre-wrap">${esc(d.body)}</div><div class="meta muted">${avatar(au)}<span>${esc(au.name)} · ${Rep.of(au.id)} rep</span><span>${ago(d.createdAt)}</span><span>${d.views} views</span><button class="ico ${on ? 'on' : ''}" data-act="bm" data-id="${d.id}">${on ? '★ Saved' : '☆ Save'}</button>${d.authorId === me.id ? `<a class="ico" href="#/ask/${d.id}">Edit</a><button class="ico" data-act="deldoubt" data-id="${d.id}">Delete</button>` : ''}<button class="ico" data-act="report" data-type="doubt" data-id="${d.id}">Report</button></div></article><h2>${as.length} answer${as.length === 1 ? '' : 's'}</h2>${as.map(a => answerH(a, d)).join('') || empty('No answers yet', 'Be the first to help.')}<form class="card" data-form="answer" data-id="${d.id}"><label for="ab">Your answer (use @username to mention)</label><textarea id="ab" name="body"></textarea><div id="err" class="err" role="alert"></div><div class="meta"><button class="btn p">Post answer</button></div></form>`; },
+  search() { const s = AppState.ui.s; return `<h1>Explore doubts</h1><div class="card grid" style="grid-template-columns:repeat(auto-fit,minmax(150px,1fr))"><div style="grid-column:1/-1"><label for="sq" class="muted">Search titles, descriptions, tags</label><input id="sq" type="search" data-f="q" value="${esc(s.q)}" placeholder="e.g. eigenvalues"></div><div><label for="ss">Subject</label><select id="ss" data-f="subject"><option value="">All</option>${SUBJECTS.map(x => `<option ${s.subject === x ? 'selected' : ''}>${x}</option>`).join('')}</select></div><div><label for="st">Status</label><select id="st" data-f="status">${[['', 'All'], ['solved', 'Solved'], ['open', 'Open'], ['unanswered', 'Unanswered']].map(x => `<option value="${x[0]}" ${s.status === x[0] ? 'selected' : ''}>${x[1]}</option>`).join('')}</select></div><div><label for="so">Sort</label><select id="so" data-f="sort">${[['new', 'Newest'], ['answered', 'Most answered'], ['popular', 'Most popular']].map(x => `<option value="${x[0]}" ${s.sort === x[0] ? 'selected' : ''}>${x[1]}</option>`).join('')}</select></div></div><div id="res">${resultsH()}</div>`; },
+  bookmarks() { return `<h1>Bookmarks</h1>${list(bms().map(doubt).filter(Boolean), empty('No saved doubts', 'Tap Save on any doubt to keep it here.'))}`; },
+  notifications() { const n = myNotifs(); return `<h1>Notifications</h1><div class="meta"><button class="btn sm" data-act="readall">Mark all as read</button></div><br>${n.map(notifH).join('') || empty('All caught up', 'New answers and votes will show up here.')}`; },
+  profile() { const u = AppState.currentUser, t = AppState.ui.ptab;
+    const body = t === 'q' ? list(db.doubts.filter(d => d.authorId === u.id), empty('No doubts yet', 'Ask your first one.')) : t === 'a' ? (db.answers.filter(a => a.authorId === u.id).map(a => `<div class="card"><a class="qt" href="#/q/${a.questionId}">${esc(doubt(a.questionId)?.title || '')}</a><p>${esc(a.body)}</p>${a.isAccepted ? '<span class="accb">✓ Accepted</span>' : ''}</div>`).join('') || empty('No answers yet', 'Help someone today.')) : list(bms().map(doubt).filter(Boolean), empty('Nothing saved', ''));
+    const un = db.doubts.filter(d => d.authorId === u.id && !ansOf(d.id).length);
+    return `<div class="card"><div class="meta">${avatar(u, 1)}<div><h1 style="margin:0">${esc(u.name)}</h1><span class="muted">@${esc(u.username)} · ${esc(u.branch)}, ${esc(u.year)} year · joined ${new Date(u.joinedAt).toLocaleDateString()}</span></div><button class="btn" data-act="editprof" style="margin-left:auto">Edit profile</button></div>${AppState.ui.edit ? `<form data-form="prof"><label for="pn">Name</label><input id="pn" name="name" value="${esc(u.name)}"><label for="pb">Course / branch</label><input id="pb" name="branch" value="${esc(u.branch)}"><label for="py">Year</label><input id="py" name="year" value="${esc(u.year)}"><div class="meta"><button class="btn p">Save profile</button></div></form>` : ''}</div>${statsH(u)}${un.length ? `<div class="card"><h2>Your unanswered doubts</h2>${un.map(d => `<a href="#/q/${d.id}" style="color:var(--primary);display:block">${esc(d.title)}</a>`).join('')}</div>` : ''}<div class="tabs">${[['q', 'Questions'], ['a', 'Answers'], ['s', 'Saved']].map(x => `<button class="${x[0] === t ? 'on' : ''}" data-act="ptab" data-t="${x[0]}">${x[1]}</button>`).join('')}</div>${body}<div class="card"><h2>Demo tools</h2><button class="btn d" data-act="reset">Reset demo data</button> <button class="btn" data-act="logout">Log out</button></div>`; },
+  admin() { if (AppState.currentUser.role !== 'admin') return empty('Moderators only', 'Log in as the demo account to view this page.'); const r = db.reports;
+    return `<h1>Moderation</h1><p class="muted">Prototype only: roles are stored in the browser and are not secure.</p>${r.map(x => { const tgt = x.type === 'doubt' ? doubt(x.targetId) : ans(x.targetId); return `<div class="card"><div class="meta"><span class="chip">${x.type}</span><span class="st ${x.status === 'open' ? 'open' : 'solved'}">${x.status}</span><b>${esc(x.reason)}</b></div><p>${tgt ? esc((tgt.title || tgt.body).slice(0, 160)) : '<em>Content removed</em>'}</p><div class="meta muted">Reported by ${esc(usr(x.reporterId).name)} · ${ago(x.at)}</div>${x.status === 'open' ? `<div class="meta"><button class="btn sm" data-act="rep" data-r="dismissed" data-id="${x.id}">Dismiss</button><button class="btn sm" data-act="rep" data-r="resolved" data-id="${x.id}">Mark resolved</button>${tgt ? `<button class="btn sm d" data-act="rep" data-r="removed" data-id="${x.id}">Remove content</button>` : ''}</div>` : ''}</div>`; }).join('') || empty('No reports', 'Reported content will appear here.')}`; },
+  login() { return `<div class="auth"><a class="logo" href="#/login" style="padding-left:0">DoubtDesk</a><p>Ask, answer and build a library of solved doubts.</p><div class="card"><h2>Log in</h2><form data-form="login"><label for="li">Email or username</label><input id="li" name="id" autocomplete="username"><label for="lp">Password</label><input id="lp" name="pw" type="password" autocomplete="current-password"><div id="err" class="err" role="alert"></div><div class="meta"><button class="btn p">Log in</button></div></form><div class="demo"><b>Demo account:</b> demo@doubtdesk.local / demo123<br>Prototype only: passwords are stored in plain text in your browser.</div></div><div class="card"><h2>Create account</h2><form data-form="reg" novalidate>${[['name', 'Full name'], ['username', 'Username'], ['email', 'Email'], ['branch', 'Course / branch'], ['year', 'Year']].map(f => `<label for="r${f[0]}">${f[1]}</label><input id="r${f[0]}" name="${f[0]}">`).join('')}<label for="rpw">Password</label><input id="rpw" name="pw" type="password"><label for="rpc">Confirm password</label><input id="rpc" name="pc" type="password"><div id="err2" class="err" role="alert"></div><div class="meta"><button class="btn p">Create account</button></div></form></div><button class="ico" data-act="reset">Reset demo data</button></div>`; }
+};
+const resultsH = () => { const r = query(AppState.ui.s); return `<p class="muted">${r.length} result${r.length === 1 ? '' : 's'}</p>` + list(r, empty('No doubts match', 'Clear a filter or ask this as a new doubt.')); };
+/* ===== ROUTER ===== */
+const NAV = [['home', 'Home'], ['search', 'Explore'], ['ask', 'Ask Doubt'], ['bookmarks', 'Bookmarks'], ['notifications', 'Notifications'], ['profile', 'Profile'], ['admin', 'Moderation']];
+const route = () => { const p = (location.hash.slice(2) || 'home').split('/'); return { name: p[0], id: p[1] }; };
+function render() {
+  const app = $('#app'), r = route(), me = AppState.currentUser;
+  if (!me) { app.innerHTML = V.login(); return; }
+  if (r.name === 'login') { location.hash = '#/home'; return; }
+  const view = V[r.name] ? r.name : 'home', unread = myNotifs().filter(n => !n.read).length;
+  const link = ([k, l], cls) => `<a class="${cls} ${k === view ? 'on' : ''}" href="#/${k}" ${k === view ? 'aria-current="page"' : ''}>${l}${k === 'notifications' && unread ? `<span class="badge">${unread}</span>` : ''}</a>`;
+  const rec = (db.viewed[me.id] || []).map(doubt).filter(Boolean).slice(0, 4);
+  app.innerHTML = `<div class="shell"><nav class="side" aria-label="Main"><a class="logo" href="#/home">DoubtDesk</a>${NAV.filter(n => n[0] !== 'admin' || me.role === 'admin').map(n => link(n, 'nl')).join('')}</nav><main id="main">${V[view](r.id)}</main><aside class="rt"><div class="card"><h2>Continue learning</h2>${rec.map(d => `<a href="#/q/${d.id}">${esc(d.title)}</a>`).join('') || '<span class="muted">Doubts you open appear here.</span>'}</div><div class="card"><h2>Top contributors</h2>${[...db.users].sort((a, b) => Rep.of(b.id) - Rep.of(a.id)).slice(0, 4).map(u => `<div>${avatar(u)}${esc(u.name)} <span class="muted">${Rep.of(u.id)}</span></div>`).join('')}</div></aside></div><nav class="bot" aria-label="Mobile">${[NAV[0], NAV[1], NAV[2], NAV[4], NAV[5]].map(n => link([n[0], n[1] === 'Notifications' ? 'Alerts' : n[1] === 'Ask Doubt' ? 'Ask' : n[1]], '')).join('')}</nav>`;
+}
+/* ===== DOUBTS / ANSWERS / VOTING / MODERATION ACTIONS ===== */
+const confirmDlg = (msg, ok) => { const d = $('#dlg'); d.innerHTML = `<form method="dialog"><p>${esc(msg)}</p><div class="meta"><button class="btn d" value="ok">Confirm</button><button class="btn" value="cancel">Cancel</button></div></form>`; d.onclose = () => d.returnValue === 'ok' && ok(); d.showModal(); };
+const removeDoubt = id => { db.doubts = db.doubts.filter(d => d.id !== id); db.answers = db.answers.filter(a => a.questionId !== id); };
+const A = {
+  tab: e => { AppState.ui.tab = e.dataset.t; render(); },
+  ptab: e => { AppState.ui.ptab = e.dataset.t; render(); },
+  tagq: e => { AppState.ui.s = { q: e.dataset.t, subject: '', status: '', sort: 'new' }; },
+  bm: e => { const b = bms(), i = b.indexOf(e.dataset.id); i < 0 ? b.push(e.dataset.id) : b.splice(i, 1); save(); render(); toast(i < 0 ? 'Saved' : 'Removed from saved'); },
+  vote: e => { const a = ans(e.dataset.id), v = +e.dataset.v, me = AppState.currentUser; if (a.authorId === me.id) return toast('You cannot vote on your own answer'); const i = a.voters.findIndex(x => x.u === me.id); if (i >= 0) { if (a.voters[i].v === v) a.voters.splice(i, 1); else a.voters[i].v = v; } else { a.voters.push({ u: me.id, v }); if (v > 0) notify(a.authorId, `${me.name} upvoted your answer`, '#/q/' + a.questionId); } save(); render(); },
+  accept: e => { const a = ans(e.dataset.id), was = a.isAccepted; ansOf(a.questionId).forEach(x => x.isAccepted = false); a.isAccepted = !was; if (!was) notify(a.authorId, `Your answer was accepted on "${doubt(a.questionId).title}" (+${Rep.ACC} rep)`, '#/q/' + a.questionId); doubt(a.questionId).status = a.isAccepted ? 'solved' : 'open'; save(); render(); toast(was ? 'Answer unaccepted' : 'Doubt marked as solved'); },
+  editans: e => { AppState.ui.editAns = e.dataset.id; render(); }, cancel: () => { AppState.ui.editAns = null; render(); },
+  delans: e => confirmDlg('Delete this answer?', () => { db.answers = db.answers.filter(a => a.id !== e.dataset.id); save(); render(); toast('Answer deleted'); }),
+  deldoubt: e => confirmDlg('Delete this doubt and its answers?', () => { removeDoubt(e.dataset.id); save(); location.hash = '#/home'; toast('Doubt deleted'); }),
+  read: e => { const n = db.notifs.find(x => x.id === e.dataset.id); if (n) { n.read = true; save(); } }, read1: e => { A.read(e); render(); },
+  readall: () => { myNotifs().forEach(n => n.read = true); save(); render(); },
+  editprof: () => { AppState.ui.edit = !AppState.ui.edit; render(); },
+  logout: () => { logoutUser(); location.hash = '#/login'; render(); },
+  reset: () => confirmDlg('Reset all DoubtDesk data and restore the demo account?', () => { localStorage.removeItem(K); localStorage.removeItem(SK); location.hash = '#/login'; location.reload(); }),
+  report: e => { const d = $('#dlg'); d.innerHTML = `<form method="dialog"><h2>Report ${e.dataset.type}</h2><label for="rr">Reason</label><select id="rr" name="reason">${['spam', 'inappropriate content', 'harassment', 'misinformation', 'other'].map(x => `<option>${x}</option>`).join('')}</select><div class="meta"><button class="btn p" value="ok">Submit report</button><button class="btn" value="cancel">Cancel</button></div></form>`; d.onclose = () => { if (d.returnValue === 'ok') { db.reports.unshift({ id: uid(), type: e.dataset.type, targetId: e.dataset.id, reason: $('#rr').value, reporterId: AppState.currentUser.id, status: 'open', at: Date.now() }); save(); toast('Report sent to moderators'); } }; d.showModal(); },
+  rep: e => { const r = db.reports.find(x => x.id === e.dataset.id), act = e.dataset.r; if (act === 'removed') { r.type === 'doubt' ? removeDoubt(r.targetId) : db.answers = db.answers.filter(a => a.id !== r.targetId); } r.status = act; save(); render(); toast('Report ' + act); }
+};
+/* ===== FORM HANDLERS ===== */
+const F = {
+  login: f => { const v = Object.fromEntries(new FormData(f)); if (!loginUser(v.id.trim(), v.pw)) return $('#err').textContent = 'Email/username or password is incorrect.'; location.hash = '#/home'; render(); },
+  reg: f => { const v = Object.fromEntries(new FormData(f)); Object.keys(v).forEach(k => v[k] = v[k].trim()); const e = $('#err2');
+    if (Object.values(v).some(x => !x)) return e.textContent = 'Fill in every field.'; if (!/^\S+@\S+\.\S+$/.test(v.email)) return e.textContent = 'Enter a valid email.'; if (v.pw.length < 6) return e.textContent = 'Password needs at least 6 characters.'; if (v.pw !== v.pc) return e.textContent = 'Passwords do not match.';
+    if (db.users.some(u => u.email === v.email.toLowerCase() || u.username === v.username.toLowerCase())) return e.textContent = 'Email or username already in use.';
+    db.users.push({ id: 'u' + uid(), name: v.name, username: v.username.toLowerCase(), email: v.email.toLowerCase(), password: v.pw, branch: v.branch, year: v.year, role: 'user', joinedAt: Date.now() }); save(); loginUser(v.email, v.pw); location.hash = '#/home'; render(); toast('Welcome to DoubtDesk'); },
+  ask: f => { const v = Object.fromEntries(new FormData(f)), id = f.dataset.id, e = $('#err'); v.title = v.title.trim(); v.body = v.body.trim();
+    if (!v.title || !v.body || !v.subject) return e.textContent = 'Title, description and subject are required.'; if (v.title.length < 10) return e.textContent = 'Make the title at least 10 characters.';
+    const tags = v.tags.split(',').map(t => t.trim().toLowerCase().replace(/\s+/g, '-')).filter(Boolean).slice(0, 5);
+    if (!id && !AppState.ui.sim) { const s = similar(v.title, v.body); AppState.ui.sim = true; if (s.length) { $('#sim').innerHTML = `<div class="demo"><b>Before you post, you may find these useful.</b>${s.map(d => `<a href="#/q/${d.id}" style="display:block;color:var(--primary)">${esc(d.title)}</a>`).join('')}</div>`; $('#post').textContent = 'Post anyway'; return; } }
+    if (id) Object.assign(doubt(id), { title: v.title, body: v.body, subject: v.subject, tags, updatedAt: Date.now() }); else { const n = 'q' + uid(); db.doubts.unshift({ id: n, authorId: AppState.currentUser.id, title: v.title, body: v.body, subject: v.subject, tags, status: 'open', createdAt: Date.now(), updatedAt: Date.now(), views: 0 }); f.dataset.id = n; }
+    AppState.ui.sim = false; save(); location.hash = '#/q/' + (id || f.dataset.id); toast(id ? 'Changes saved' : 'Doubt posted'); },
+  answer: f => { const b = new FormData(f).get('body').trim(); if (b.length < 5) return $('#err').textContent = 'Write at least 5 characters.'; const me = AppState.currentUser, q = doubt(f.dataset.id);
+    db.answers.push({ id: 'a' + uid(), questionId: q.id, authorId: me.id, body: b, voters: [], isAccepted: false, createdAt: Date.now() }); notify(q.authorId, `${me.name} answered your doubt "${q.title}"`, '#/q/' + q.id);
+    (b.match(/@(\w+)/g) || []).forEach(m => { const u = db.users.find(x => x.username === m.slice(1).toLowerCase()); if (u) notify(u.id, `${me.name} mentioned you in an answer`, '#/q/' + q.id); }); save(); render(); toast('Answer posted'); },
+  editans: f => { const b = new FormData(f).get('body').trim(); if (b) ans(f.dataset.id).body = b; AppState.ui.editAns = null; save(); render(); toast('Answer updated'); },
+  prof: f => { const v = Object.fromEntries(new FormData(f)); Object.assign(AppState.currentUser, { name: v.name.trim() || AppState.currentUser.name, branch: v.branch.trim(), year: v.year.trim() }); AppState.ui.edit = false; save(); render(); toast('Profile saved'); }
+};
+/* ===== INIT ===== */
+function init() {
+  db = loadDb(); if (!db) { db = seed(); save(); }
+  AppState.currentUser = getCurrentUser();
+  document.addEventListener('click', e => { const t = e.target.closest('[data-act]'); if (t && A[t.dataset.act]) A[t.dataset.act](t, e); });
+  document.addEventListener('submit', e => { const f = e.target.closest('[data-form]'); if (f) { e.preventDefault(); F[f.dataset.form](f); } });
+  const upd = debounce(() => { const r = $('#res'); if (r) r.innerHTML = resultsH(); });
+  document.addEventListener('input', e => { const k = e.target.dataset.f; if (k) { AppState.ui.s[k] = e.target.value; upd(); } if (e.target.closest('[data-form="ask"]')) AppState.ui.sim = false; });
+  window.addEventListener('hashchange', () => { const r = route(); if (r.name === 'q' && AppState.currentUser) { const d = doubt(r.id); if (d) { d.views++; const v = (db.viewed[AppState.currentUser.id] ||= []); db.viewed[AppState.currentUser.id] = [d.id, ...v.filter(x => x !== d.id)].slice(0, 6); save(); } } AppState.ui.editAns = null; AppState.ui.sim = false; render(); scrollTo(0, 0); });
+  if (!location.hash) location.hash = AppState.currentUser ? '#/home' : '#/login';
+  render();
+}
+init();
+})();
+</script></body></html>
